@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Insertar Datos de Compañías</title>
+</head>
+<body>
+    <h1>Autenticación</h1>
+    <form id="authForm">
+        <label for="username">Usuario:</label>
+        <input type="text" id="username" name="username" required><br><br>
+        <label for="password">Contraseña:</label>
+        <input type="password" id="password" name="password" required><br><br>
+        <button type="submit">Autenticar</button>
+    </form>
+
+    <h1>Formulario de Inserción de Datos de Compañías</h1>
+    <form id="companyForm">
+        <label for="name_company">Nombre:</label>
+        <input type="text" id="name_company" name="name_company" required><br><br>
+
+        <label for="dba_company">DBA:</label>
+        <input type="text" id="dba_company" name="dba_company" required><br><br>
+
+        <label for="fein_company">FEIN:</label>
+        <input type="text" id="fein_company" name="fein_company" required><br><br>
+
+        <label for="address_company">Dirección:</label>
+        <input type="text" id="address_company" name="address_company" required><br><br>
+
+        <label for="apartment_company">Apartamento:</label>
+        <input type="text" id="apartment_company" name="apartment_company" required><br><br>
+
+        <label for="cityzip_company">Ciudad/Código Postal:</label>
+        <input type="text" id="cityzip_company" name="cityzip_company" required><br><br>
+
+        <label for="county_company">Condado:</label>
+        <input type="text" id="county_company" name="county_company" required><br><br>
+
+        <label for="mailing_address">Dirección de Correo:</label>
+        <input type="text" id="mailing_address" name="mailing_address" required><br><br>
+
+        <label for="cityzip_mailing">Ciudad/Código Postal de Correo:</label>
+        <input type="text" id="cityzip_mailing" name="cityzip_mailing" required><br><br>
+
+        <label for="phonenumber_company">Teléfono:</label>
+        <input type="text" id="phonenumber_company" name="phonenumber_company" required><br><br>
+
+        <label for="id_taxation">ID de Tributación:</label>
+        <input type="text" id="id_taxation" name="id_taxation" required><br><br>
+
+        <label for="id_business">ID de Negocio:</label>
+        <input type="text" id="id_business" name="id_business" required><br><br>
+
+        <label for="id_state">ID de Estado:</label>
+        <input type="text" id="id_state" name="id_state" required><br><br>
+
+        <label for="id_status">ID de Estatus:</label>
+        <input type="text" id="id_status" name="id_status" required><br><br>
+
+        <label for="id_user">ID de Usuario:</label>
+        <input type="text" id="id_user" name="id_user" required><br><br>
+
+        <label for="id_location">ID de Ubicación:</label>
+        <input type="text" id="id_location" name="id_location" required><br><br>
+
+        <button type="submit">Enviar</button>
+    </form>
+
+    <script>
+        let token = '';
+
+        document.getElementById('authForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const authData = {
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value
+            };
+
+            fetch('/auth', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(authData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    token = data.token;
+                    alert('Autenticación exitosa!');
+                } else {
+                    alert('Autenticación fallida!');
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Ocurrió un error al autenticar.');
+            });
+        });
+
+        document.getElementById('companyForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            if (token === '') {
+                alert('Por favor autentíquese primero.');
+                return;
+            }
+
+            const formData = {
+                name_company: document.getElementById('name_company').value,
+                dba_company: document.getElementById('dba_company').value,
+                fein_company: document.getElementById('fein_company').value,
+                address_company: document.getElementById('address_company').value,
+                apartment_company: document.getElementById('apartment_company').value,
+                cityzip_company: document.getElementById('cityzip_company').value,
+                county_company: document.getElementById('county_company').value,
+                mailing_address: document.getElementById('mailing_address').value,
+                cityzip_mailing: document.getElementById('cityzip_mailing').value,
+                phonenumber_company: document.getElementById('phonenumber_company').value,
+                id_taxation: document.getElementById('id_taxation').value,
+                id_business: document.getElementById('id_business').value,
+                id_state: document.getElementById('id_state').value,
+                id_status: document.getElementById('id_status').value,
+                id_user: document.getElementById('id_user').value,
+                id_location: document.getElementById('id_location').value
+            };
+
+            fetch('/companies/insert', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                alert('Datos insertados correctamente!');
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Ocurrió un error al insertar los datos.');
+            });
+        });
+    </script>
+</body>
+</html>
